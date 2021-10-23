@@ -7,7 +7,10 @@ def parse_review(response):
     pic = response.xpath('//meta[@property="og:image"]/@content').get()
     summary = response.xpath('//meta[@property="og:description"]/@content').get()
     sid = response.xpath('//input[@name="postid"]/@value').getall()[1]
-    verdict = response.xpath('//div[@class="single-review-card border"]/preceding-sibling::p[position() < 4]//text()').get()
+    verdict = response.xpath('//div[@class="single-review-card border"]'\
+                             '/preceding-sibling::p[position() < 4]//text()').get()
+    pros = response.xpath('//div[@class="type:primaryImage pros"]/ul/li/text()').getall()
+    cons = response.xpath('//div[@class="cons"]/ul/li/text()').getall()
 
     data = json.loads(response.xpath('//script[@type="application/ld+json"][2]//text()').extract_first())
 
@@ -25,16 +28,18 @@ def parse_review(response):
         product_name = title
 
     yield {
-        'Title': title,
-        'Pic': pic,
-        'Summary': summary,
-        'SID': sid,
         'Product Name': product_name,
+        'Author': author,
+        'SID': sid,
+        'Date': date,
         'Rating': rating,
         'Scale': 10,
-        'Author': author,
-        'Date': date,
+        'Title': title,
+        'Pros': pros,
+        'Cons': cons,
         'URL': response.url,
+        'Pic': pic,
+        'Summary': summary,
         'Verdict': verdict
     }
 
